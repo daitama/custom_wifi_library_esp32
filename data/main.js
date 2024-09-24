@@ -79,6 +79,7 @@ function makeAP(accessPointObject) {
   // Create the connect button (hidden by default)
   const button = document.createElement("button");
   button.setAttribute("class", "APconnectButton");
+  button.setAttribute("type", "submit");
   button.innerText = "Connect";
   button.hidden = true;
 
@@ -98,6 +99,7 @@ function makeAP(accessPointObject) {
 
       // Reset password field only if switching to a different container
       input.hidden = true;
+      input.required = false;
 
       currentActiveDiv = container; // Update the currently active div
     }
@@ -113,6 +115,7 @@ function makeAP(accessPointObject) {
     event.stopPropagation(); // Prevents the container click event from firing
     if (accessPointObject.securityType != "open" && input.hidden == true) {
       input.hidden = false;
+      input.required = true;
       console.log("input shown");
     } else {
       alert("Data Terkirim");
