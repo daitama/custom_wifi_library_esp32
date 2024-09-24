@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wi-Fi Login Page</title>
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="main.js"></script>
+</head>
+<body>
+    <header>
+        <div id="header-contaner">
+            <h1>Connect to A Wi-Fi</h1>
+        </div>
+    </header>
+    <main>
+        <button id="refresh-btn">Refresh</button>
+        <div id="ap-list-container">
+            <div id="ap">
+                <form action="" class="credentialAP">
+                    <h3><label for="APpassField">Nama Wi-Fi</label></h3>
+                    <input type="password" class="APpassField" hidden>
+                    <button class="APconnectButton" hidden>Connect</button>
+                </form>
+            </div>
+        </div>
+    </main>
+    %SSID%
+    <script>
+    const accessPoints = [{
+        ssid: "MERPATI 16",
+        securityType: "PSK",
+        networkStrengh: "80",
+    },
+    {
+        ssid: "MERPATI 16 LT2",
+        securityType: "open",
+        networkStrengh: "80",
+    }];
+    </script>
+
+</body>
+</html>
