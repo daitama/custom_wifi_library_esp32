@@ -1,4 +1,6 @@
 //mulai
+import './icons.js';
+
 console.log("Hello World");
 let currentActiveDiv = null;
 
@@ -119,11 +121,19 @@ function makeAP(accessPointObject) {
       console.log("input shown");
     } else {
       alert("Data Terkirim");
+
       //Logic untuk kirim data
+      sendCredentialData(accessPointObject.ssid, input.value, typeof input.value);
     }
   });
 
   container.append(form);
 
   return container;
+}
+
+function sendCredentialData(ssid, pass, type) {
+  console.log("SSID :" + ssid);
+  console.log("Password : " + pass);
+  console.log("Password type : " + type);
 }
