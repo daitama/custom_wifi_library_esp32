@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wi-Fi Login Page</title>
-    <link rel="stylesheet" type="style/css" href="/data/styles.css">
+    <link rel="stylesheet" type="text/css" href="styles.css">
     <script type="module" defer src="main.js"></script>
 </head>
 <body>
@@ -18,10 +18,13 @@
         <div id="ap-list-container">
             <div id="ap">
                 <form action="" class="credentialAP">
-                    <wifi-icon3 class="icon-wifi"></wifi-icon3>
-                    <h3><label for="APpassField">Nama Wi-Fi</label></h3>
-                    <input type="password" class="APpassField" hidden>
-                    <button class="APconnectButton" hidden>Connect</button>
+                    <div class="label-container">
+                        <wifi-icon3 class="icon-wifi"></wifi-icon3>
+                        <h3><label for="APpassField">Nama Wi-Fi</label></h3>
+                        <lock-icon0></lock-icon0>
+                    </div>
+                    <input type="password" class="APpassField" >
+                    <button class="APconnectButton" >Connect</button>
                 </form>
             </div>
         </div>

@@ -59,6 +59,41 @@ function makeAP(accessPointObject) {
   container.setAttribute("class", "accessPoint");
   container.setAttribute("securityType", `${accessPointObject.securityType}`);
 
+  //Create headerContainer element
+  const labelContainer = document.createElement("div");
+  labelContainer.setAttribute("class", "label-container");
+  
+  //Create WiFi Icon element based on signalStrength
+  let wifiIcon;
+switch (true) {
+  case (accessPointObject.signalStrength > -60):
+    wifiIcon = document.createElement("wifi-icon3");  // Custom element with hyphen
+    // wifiIcon.setAttribute("class", "icon-wifi");
+    break;
+  case (accessPointObject.signalStrength > -70):
+    wifiIcon = document.createElement("wifi-icon2");
+    // wifiIcon.setAttribute("class", "icon-wifi");
+    break;
+  case (accessPointObject.signalStrength > -80):
+    wifiIcon = document.createElement("wifi-icon1");
+    // wifiIcon.setAttribute("class", "icon-wifi");
+    break;
+  default:
+    wifiIcon = document.createElement("wifi-icon0");
+    // wifiIcon.setAttribute("class", "icon-wifi");
+}
+
+  //Create lock Icon based on securityType
+  let lockIcon;
+  if(accessPointObject.securityType == 'open'){
+    lockIcon = document.createElement("lock-icon1");
+    // lockIcon.setAttribute("class", "icon-lock");
+  }else{
+    lockIcon = document.createElement("lock-icon0");
+    // lockIcon.setAttribute("class", "icon-lock");
+  }
+ 
+
   // Create the form element
   const form = document.createElement("form");
   form.setAttribute("class", "credentialAP");
@@ -69,6 +104,9 @@ function makeAP(accessPointObject) {
   label.innerText = `${accessPointObject.ssid}`;
 
   heading.append(label);
+  labelContainer.append(wifiIcon);
+  labelContainer.append(heading);
+  labelContainer.append(lockIcon);
 
   // Create the password input field (hidden by default)
   const input = document.createElement("input");
@@ -108,7 +146,7 @@ function makeAP(accessPointObject) {
   });
 
   // Append elements to the form
-  form.append(heading);
+  form.append(labelContainer);
   form.append(input);
   form.append(button);
 
