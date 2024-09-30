@@ -65,34 +65,48 @@ void writeFile(fs::FS &fs, const char * path, const char * message){
 }
 
 // Function to scan Wi-Fi networks and return SSIDs as a formatted string array
-String getWiFiNetworks() {
-  // Start scanning for networks
-  int numNetworks = WiFi.scanNetworks();
-  
-  // If no networks found, return an empty array
-  if (numNetworks == 0) {
-    return "[]";
-  }
+String scanWiFiNetworks() {
+    // Start the WiFi scan
+    int n = WiFi.scanNetworks();
 
-  // Create a string to store the array of SSIDs
-  String wifiArray = "[";
+    // Create a JSON array to store the results
+    String jsonArray = "[";
 
-  // Loop through each network and add SSID to the array string
-  for (int i = 0; i < numNetworks; i++) {
-    String ssid = WiFi.SSID(i);
-    wifiArray += "\"" + ssid + "\"";  // Add SSID in quotes
+    // Loop through the scanned networks
+    for (int i = 0; i < n; i++) {
+        // Get the SSID, RSSI, channel, and security type
+        String ssid = WiFi.SSID(i);
+        int signalStrength = WiFi.RSSI(i);
+        int channel = WiFi.channel(i);
+        String securityType;
 
-    // Add a comma between SSIDs, but not after the last one
-    if (i < numNetworks - 1) {
-      wifiArray += ", ";
+        // Determine the security type
+        if (WiFi.encryptionType(i) == WIFI_AUTH_OPEN) {
+            securityType = "open";
+        } else {
+            securityType = "PSK"; // For simplicity, we'll consider other types as PSK
+        }
+
+        // Check if the SSID is hidden
+        String isHidden = ssid.length() == 0 ? "true" : "false";
+
+        // Append to JSON array
+        jsonArray += "{";
+        jsonArray += "\"ssid\":\"" + ssid + "\",";
+        jsonArray += "\"securityType\":\"" + securityType + "\",";
+        jsonArray += "\"signalStrength\":\"" + String(signalStrength) + "\",";
+        jsonArray += "\"channel\":\"" + String(channel) + "\",";
+        jsonArray += "\"isHidden\":\"" + isHidden + "\"";
+        jsonArray += "}";
+
+        if (i < n - 1) {
+            jsonArray += ",";
+        }
     }
-  }
 
-  // Close the array string
-  wifiArray += "]";
-  
-  // Return the formatted string array
-  return wifiArray;
+    jsonArray += "]";
+
+    return jsonArray;
 }
 
 // Replace placeholder with LED state value
@@ -119,7 +133,7 @@ void setup() {
 
   // Call the getWiFiNetworks function and print the result
   Serial.println("Scanning for Wi-Fi networks...");
-  networks = getWiFiNetworks();
+  networks = scanWiFiNetworks();
   Serial.println(networks);
 
   Serial.println("Setting AP (Acces Point)");

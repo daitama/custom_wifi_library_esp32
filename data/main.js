@@ -35,19 +35,6 @@ function loadAP() {
     const accessPointElement = makeAP(accessPointItem);
     accessPointList.append(accessPointElement);
   }
-
-  // Get all clickable divs
-  const divs = document.querySelectorAll(".accessPoint");
-
-  //Loop through each div and add a click event listener
-  divs.forEach((div) => {
-    div.addEventListener("click", () => {
-      document.querySelectorAll(".APconnectButton").forEach((button) => {
-        button.hidden = true;
-      });
-      div.querySelector(".APconnectButton").hidden = false;
-    });
-  });
 }
 
 function makeAP(accessPointObject) {
@@ -115,7 +102,7 @@ switch (true) {
   const input = document.createElement("input");
   input.setAttribute("type", "password");
   input.setAttribute("class", "APpassField");
-  input.setAttribute("placeholder", "Enter your Password");
+  input.setAttribute("placeholder", "Enter WiFi Password");
   input.setAttribute("name", "passField");
   input.hidden = true;
 
