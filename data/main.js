@@ -1,5 +1,4 @@
 //mulai
-import './icons.js';
 
 console.log("Hello World");
 let currentActiveDiv = null;
@@ -64,32 +63,36 @@ function makeAP(accessPointObject) {
   labelContainer.setAttribute("class", "label-container");
   
   //Create WiFi Icon element based on signalStrength
-  let wifiIcon;
+  const wifiIcon = document.createElement("object");
+  wifiIcon.setAttribute("type", "image/svg+xml");
+  wifiIcon.setAttribute("class", "icon-wifi");
 switch (true) {
-  case (accessPointObject.signalStrength > -60):
-    wifiIcon = document.createElement("wifi-icon3");  // Custom element with hyphen
+  case (parseInt(accessPointObject.signalStrength,10) > -60):
+    wifiIcon.setAttribute("data","wifi-0.svg");  // Custom element with hyphen
     // wifiIcon.setAttribute("class", "icon-wifi");
     break;
-  case (accessPointObject.signalStrength > -70):
-    wifiIcon = document.createElement("wifi-icon2");
+  case (parseInt(accessPointObject.signalStrength,10) > -70):
+    wifiIcon.setAttribute("data","wifi-3.svg");
     // wifiIcon.setAttribute("class", "icon-wifi");
     break;
-  case (accessPointObject.signalStrength > -80):
-    wifiIcon = document.createElement("wifi-icon1");
+  case (parseInt(accessPointObject.signalStrength,10) > -80):
+    wifiIcon.setAttribute("data","wifi-2.svg");
     // wifiIcon.setAttribute("class", "icon-wifi");
     break;
   default:
-    wifiIcon = document.createElement("wifi-icon0");
+    wifiIcon.setAttribute("data","wifi-1.svg");
     // wifiIcon.setAttribute("class", "icon-wifi");
 }
 
   //Create lock Icon based on securityType
-  let lockIcon;
+  const lockIcon = document.createElement("object");
+  lockIcon.setAttribute("type", "image/svg+xml");
+  lockIcon.setAttribute("class", "icon-lock");
   if(accessPointObject.securityType == 'open'){
-    lockIcon = document.createElement("lock-icon1");
+    lockIcon.setAttribute("data", "lock-open.svg");
     // lockIcon.setAttribute("class", "icon-lock");
   }else{
-    lockIcon = document.createElement("lock-icon0");
+    lockIcon.setAttribute("data", "lock.svg");
     // lockIcon.setAttribute("class", "icon-lock");
   }
  

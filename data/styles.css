@@ -1,58 +1,144 @@
-body {
-    font-family: Arial, sans-serif;
+/* Reset some basic styles */
+* {
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f4f7f6;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
 }
 
 header {
-    background-color: #4CAF50;
+    width: 100%;
+    background-color: #007bff;
     color: white;
-    padding: 20px;
+    padding: 1.5rem;
     text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    font-size: 2rem;
+    font-weight: 500;
+}
+
+main {
+    padding: 2rem;
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+#refresh-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#refresh-btn:hover {
+    background-color: #218838;
 }
 
 #ap-list-container {
-    margin: 20px;
-    padding: 20px;
+    display: flex;
+    flex-direction: column;
     background-color: white;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.accessPoint {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 0.3rem;
+    transition: background-color 0.3s ease;
+}
+
+.accessPoint:last-child{
+    margin-bottom: 0; /* Remove bottom margin from the last item */
+}
+.accessPoint:hover {
+    background-color: #dcdcdc; /* Light background color on hover */
+}
+
+.credentialAP {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 .label-container {
     display: flex;
     align-items: center;
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
+    gap: 0.75rem;
 }
 
-wifi-icon3 {
-    margin-right: 15px;
-    scale: 2;
-    fill: gray;
+.label-container h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 500;
+}
+
+.icon-wifi {
+    width: 30px;
+    height: 30px;
 }
 
 .APpassField {
-    flex-grow: 1;
-    margin-right: 10px;
-    padding: 8px;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
     border: 1px solid #ccc;
-    border-radius: 4px;
+    font-size: 1rem;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .APconnectButton {
-    padding: 8px 16px;
-    background-color: #4CAF50;
+    background-color: #007bff;
     color: white;
     border: none;
-    border-radius: 4px;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    border-radius: 0.5rem;
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 .APconnectButton:hover {
-    background-color: #45a049;
+    background-color: #0056b3;
 }
 
-.accessPoint:hover {
-    background-color: rgb(232, 229, 229);
+@media (max-width: 600px) {
+    header h1 {
+        font-size: 1.75rem;
+    }
+
+    main {
+        padding: 1rem;
+    }
+
+    .APpassField, .APconnectButton {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+    }
+
+    #refresh-btn {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+    }
 }
