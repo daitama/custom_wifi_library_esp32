@@ -109,13 +109,44 @@ String scanWiFiNetworks() {
     return jsonArray;
 }
 
+void handleGetRequest(){
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(LittleFS, "/index.html", "text/html");
+  });
+  server.serveStatic("/", LittleFS, "/");
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(LittleFS, "/styles.css", "text/css");
+  });
+  server.serveStatic("/", LittleFS, "/").setDefaultFile("/styles.css").setCacheControl("no-store");
+  server.on("/getNetworks", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(200, "text/html", networks);
+  });
+}
+
+void handlePostRequest(){
+      server.on("/", HTTP_POST, [](AsyncWebServerRequest *request){
+      int params = request->params();
+      for(int i=0; i<params; i++){
+        const AsyncWebParameter* p = request->getParam(i);
+        if(p->isPost()){
+          // HTTP POST ssid value
+          if (p->name() == "message"){
+          networks = scanWiFiNetworks();
+            //Write file to save value
+          }
+        }
+      }
+      request->send(200, "text/plain", networks);
+    });
+}
+
 // Replace placeholder with LED state value
 String processor(const String& var){
   if(var == "SSID"){
     String ssidPlaceholder = "";
     ssidPlaceholder += "<script>const accessPoints = ";
     ssidPlaceholder += networks;
-    ssidPlaceholder += ";</script>";
+    ssidPlaceholder += ";document.dispatchEvent(new Event(RENDER_EVENT));</script>";
     return ssidPlaceholder;
   }
   return String();
@@ -143,13 +174,9 @@ void setup() {
   Serial.print("AP IP Address: ");
   Serial.println(IP);
 
-  // Web Server Root URL
-
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(LittleFS, "/index.html", "text/html", false, processor);
-  });
-  server.serveStatic("/", LittleFS, "/");
-
+  handleGetRequest();
+  handlePostRequest();
+  
   server.begin();
 }
 

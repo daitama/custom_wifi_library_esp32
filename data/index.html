@@ -1,50 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Wi-Fi Login Page</title>
-    <link rel="stylesheet" type="text/css" href="styles.css">
-    <script type="module" defer src="main.js"></script>
-</head>
-<body>
+    <link rel="stylesheet" type="text/css" href="styles.css?v=1.0.1" />
+  </head>
+  <body>
     <header>
-        <div id="header-contaner">
-            <h1>Connect to A Wi-Fi</h1>
-        </div>
+      <div id="header-contaner">
+        <h1>Connect to A Wi-Fi</h1>
+      </div>
     </header>
     <main>
-        <button id="refresh-btn">Refresh</button>
-        <div id="ap-list-container">
-            <div id="ap">
-                <form action="" class="credentialAP">
-                    <!-- <div class="label-container">
+      <button id="refresh-btn">Refresh</button>
+      <div id="ap-list-container">
+        <div id="ap">
+          <form action="" class="credentialAP">
+            <!-- <div class="label-container">
                         <object data="wifi-3.svg" type="image/svg+xml" class="icon-wifi"></object>
                         <h3><label for="APpassField">Nama Wi-Fi</label></h3>
                         <lock-icon0></lock-icon0>
                     </div>
                     <input type="password" class="APpassField" >
                     <button class="APconnectButton" >Connect</button> -->
-                </form>
-            </div>
+          </form>
         </div>
+      </div>
     </main>
-    %SSID%
-    <script>
-    const accessPoints = [{
-        ssid: "MERPATI 16",
-        securityType: "PSK",
-        signalStrength: "-50",
-        channel: "6",
-        isHidden: "false"
-    },
-    {
-        ssid: "MERPATI 16 LT2",
-        securityType: "open",
-        signalStrength: "-80",
-        channel: "5",
-        isHidden: "false"
-    }];
-    </script>
-</body>
+    <script src="main.js"></script>
+  </body>
 </html>

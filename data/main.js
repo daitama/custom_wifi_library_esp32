@@ -1,18 +1,16 @@
-//mulai
-
 console.log("Hello World");
 let currentActiveDiv = null;
-
-// const accessPoints = [{
-//     ssid: "MERPATI 16",
-//     securityType: "PSK",
-//     networkStrengh: "80",
-// },
-// {
-//     ssid: "MERPATI 16 LT2",
-//     securityType: "open",
-//     networkStrengh: "80",
-// }];
+let accessPoints;
+accessPoints = [{
+    ssid: "MERPATI 16",
+    securityType: "PSK",
+    networkStrengh: "80",
+},
+{
+    ssid: "MERPATI 16 LT2",
+    securityType: "open",
+    networkStrengh: "80",
+}];
 const RENDER_EVENT = "render-ap";
 
 const SAVED_EVENT = "saved-ap";
@@ -20,11 +18,37 @@ const SAVED_EVENT = "saved-ap";
 document.addEventListener("DOMContentLoaded", function () {
   const refreshButton = document.getElementById("refresh-btn");
   refreshButton.addEventListener("click", function () {
-    loadAP();
+    handleRefreshButton();
   });
+  // handleGetNetwork();
+  document.dispatchEvent(new Event(RENDER_EVENT));
+});
 
+document.addEventListener(RENDER_EVENT, () => {
   loadAP();
 });
+
+function handleGetNetwork() {
+  fetch("/getNetworks")
+  .then(response => response.text())
+  .then(data => {
+    accessPoints = JSON.parse(data);
+    document.dispatchEvent(new Event(RENDER_EVENT));
+  });
+}
+
+function handleRefreshButton() {
+  fetch("/", {
+    method: "POST",
+    headers: { 'Content-type': 'application/x-www-form-urlencoded'},
+    body: "message=go"
+  })
+    .then((response) => response.text())
+    .then((data) => {
+      accessPoints = JSON.parse(data);
+      document.dispatchEvent(new Event(RENDER_EVENT));
+    });
+}
 
 function loadAP() {
   console.log(accessPoints);
@@ -48,41 +72,40 @@ function makeAP(accessPointObject) {
   //Create headerContainer element
   const labelContainer = document.createElement("div");
   labelContainer.setAttribute("class", "label-container");
-  
+
   //Create WiFi Icon element based on signalStrength
   const wifiIcon = document.createElement("object");
   wifiIcon.setAttribute("type", "image/svg+xml");
   wifiIcon.setAttribute("class", "icon-wifi");
-switch (true) {
-  case (parseInt(accessPointObject.signalStrength,10) > -60):
-    wifiIcon.setAttribute("data","wifi-0.svg");  // Custom element with hyphen
+  switch (true) {
+    case parseInt(accessPointObject.signalStrength, 10) > -60:
+      wifiIcon.setAttribute("data", "wifi-0.svg"); // Custom element with hyphen
+      // wifiIcon.setAttribute("class", "icon-wifi");
+      break;
+    case parseInt(accessPointObject.signalStrength, 10) > -70:
+      wifiIcon.setAttribute("data", "wifi-3.svg");
+      // wifiIcon.setAttribute("class", "icon-wifi");
+      break;
+    case parseInt(accessPointObject.signalStrength, 10) > -80:
+      wifiIcon.setAttribute("data", "wifi-2.svg");
+      // wifiIcon.setAttribute("class", "icon-wifi");
+      break;
+    default:
+      wifiIcon.setAttribute("data", "wifi-1.svg");
     // wifiIcon.setAttribute("class", "icon-wifi");
-    break;
-  case (parseInt(accessPointObject.signalStrength,10) > -70):
-    wifiIcon.setAttribute("data","wifi-3.svg");
-    // wifiIcon.setAttribute("class", "icon-wifi");
-    break;
-  case (parseInt(accessPointObject.signalStrength,10) > -80):
-    wifiIcon.setAttribute("data","wifi-2.svg");
-    // wifiIcon.setAttribute("class", "icon-wifi");
-    break;
-  default:
-    wifiIcon.setAttribute("data","wifi-1.svg");
-    // wifiIcon.setAttribute("class", "icon-wifi");
-}
+  }
 
   //Create lock Icon based on securityType
   const lockIcon = document.createElement("object");
   lockIcon.setAttribute("type", "image/svg+xml");
   lockIcon.setAttribute("class", "icon-lock");
-  if(accessPointObject.securityType == 'open'){
+  if (accessPointObject.securityType == "open") {
     lockIcon.setAttribute("data", "lock-open.svg");
     // lockIcon.setAttribute("class", "icon-lock");
-  }else{
+  } else {
     lockIcon.setAttribute("data", "lock.svg");
     // lockIcon.setAttribute("class", "icon-lock");
   }
- 
 
   // Create the form element
   const form = document.createElement("form");
