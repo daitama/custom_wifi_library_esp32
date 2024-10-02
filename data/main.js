@@ -1,16 +1,16 @@
 console.log("Hello World");
 let currentActiveDiv = null;
 let accessPoints;
-accessPoints = [{
-    ssid: "MERPATI 16",
-    securityType: "PSK",
-    networkStrengh: "80",
-},
-{
-    ssid: "MERPATI 16 LT2",
-    securityType: "open",
-    networkStrengh: "80",
-}];
+// accessPoints = [{
+//     ssid: "MERPATI 16",
+//     securityType: "PSK",
+//     networkStrengh: "80",
+// },
+// {
+//     ssid: "MERPATI 16 LT2",
+//     securityType: "open",
+//     networkStrengh: "80",
+// }];
 const RENDER_EVENT = "render-ap";
 
 const SAVED_EVENT = "saved-ap";
@@ -20,8 +20,8 @@ document.addEventListener("DOMContentLoaded", function () {
   refreshButton.addEventListener("click", function () {
     handleRefreshButton();
   });
-  // handleGetNetwork();
-  document.dispatchEvent(new Event(RENDER_EVENT));
+  handleGetNetwork(); //uncomment ketika pake ESP32
+  // document.dispatchEvent(new Event(RENDER_EVENT));
 });
 
 document.addEventListener(RENDER_EVENT, () => {
@@ -187,4 +187,22 @@ function sendCredentialData(ssid, pass, type) {
   console.log("SSID :" + ssid);
   console.log("Password : " + pass);
   console.log("Password type : " + type);
+  const apData = new URLSearchParams();
+  apData.append("ssid", ssid);
+  apData.append("password", pass);
+  fetch("/", {
+    method: "POST",
+    headers: {'Content-Type': 'application/x-www-form-urlencoded' // Specify the content type
+    },
+    body: apData.toString()
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+  }
+    return response.text(); // Assuming the server responds with text
+  })
+  .then(data => {
+    alert(data);
+  });
 }

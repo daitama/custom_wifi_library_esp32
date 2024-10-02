@@ -4,14 +4,14 @@
 #include <AsyncTCP.h>
 #include <LittleFS.h>
 
+#define LED 22
+
+//Timer variables
+unsigned long previousMillis = 0;
+const long interval = 10000;
+
 //Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
-
-//Serach for parameter in HTTP POST request
-const char* PARAM_INPUT_1 = "ssid";
-const char* PARAM_INPUT_2 = "password";
-const char* PARAM_INPUT_3 = "ip";
-const char* PARAM_INPUT_4 = "gateway";
 
 //Variables to save value from HTML form
 String ssid;
@@ -126,33 +126,59 @@ void handleGetRequest(){
 void handlePostRequest(){
       server.on("/", HTTP_POST, [](AsyncWebServerRequest *request){
       int params = request->params();
+      String responseMessage;
       for(int i=0; i<params; i++){
         const AsyncWebParameter* p = request->getParam(i);
         if(p->isPost()){
           // HTTP POST ssid value
           if (p->name() == "message"){
           networks = scanWiFiNetworks();
+          responseMessage = networks;
             //Write file to save value
+          }
+          if(p->name() == "ssid"){
+            ssid = p->value().c_str();
+            Serial.println("SSID Accepted!");
+            Serial.print("SSID : ");
+            Serial.println(ssid);
+          }
+          if(p->name() == "password"){
+            pass = p->value().c_str();
+            Serial.println("Password Accepted!");
+            Serial.print("Password : ");
+            Serial.println(pass);
+            initWiFi();
+            responseMessage = "WiFi is Connected!";
           }
         }
       }
-      request->send(200, "text/plain", networks);
+      request->send(200, "text/plain", responseMessage);
     });
 }
 
-// Replace placeholder with LED state value
-String processor(const String& var){
-  if(var == "SSID"){
-    String ssidPlaceholder = "";
-    ssidPlaceholder += "<script>const accessPoints = ";
-    ssidPlaceholder += networks;
-    ssidPlaceholder += ";document.dispatchEvent(new Event(RENDER_EVENT));</script>";
-    return ssidPlaceholder;
+void initWiFi() {
+  WiFi.begin(ssid, pass);
+  Serial.print("Connecting to WiFi.");
+
+  unsigned long currentMillis = millis();
+  previousMillis = currentMillis;
+
+  while (WiFi.status() != WL_CONNECTED){
+    currentMillis = millis();
+    if (currentMillis - previousMillis >= interval){
+      Serial.println("Failed to connect.");
+    }
   }
-  return String();
+
+  Serial.println("Connected!");
+  digitalWrite(LED, LOW);
+
 }
 
 void setup() {
+  pinMode(LED, OUTPUT);
+
+
   // put your setup code here, to run once:
   Serial.begin(115200);
   initLittleFS();
@@ -160,6 +186,7 @@ void setup() {
   // Set Wi-Fi to station mode and disconnect from any existing connection
   WiFi.mode(WIFI_STA);
   WiFi.disconnect();
+  digitalWrite(LED, HIGH);
   delay(100);
 
   // Call the getWiFiNetworks function and print the result
