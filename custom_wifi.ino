@@ -4,7 +4,11 @@
 #include <AsyncTCP.h>
 #include <LittleFS.h>
 
-#define LED 22
+#define LED 22 //Builtin LED
+
+// File paths to save input values premanently
+const char* ssidPath = "/ssid.txt";
+const char* passPath = "/pass.txt";
 
 //Timer variables
 unsigned long previousMillis = 0;
@@ -20,6 +24,9 @@ String ip;
 String gateway;
 
 String networks;
+
+//Variable to save states
+bool isConnected = false;
 
 
 // Initialize LittleFS
@@ -121,6 +128,9 @@ void handleGetRequest(){
   server.on("/getNetworks", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(200, "text/html", networks);
   });
+  server.on("/getStatus", HTTP_GET, [](AsyncWebServerRequest *request){
+    //
+  });
 }
 
 void handlePostRequest(){
@@ -141,24 +151,54 @@ void handlePostRequest(){
             Serial.println("SSID Accepted!");
             Serial.print("SSID : ");
             Serial.println(ssid);
+            //Write file to save value
+            writeFile(LittleFS, ssidPath, ssid.c_str());
           }
           if(p->name() == "password"){
             pass = p->value().c_str();
             Serial.println("Password Accepted!");
             Serial.print("Password : ");
             Serial.println(pass);
-            initWiFi();
-            responseMessage = "WiFi is Connected!";
+            //Write file to save value
+            writeFile(LittleFS, passPath, pass.c_str());
+            responseMessage = (initWifi()) ? "WiFi is Connected!" : getWiFiErrorMessage(WiFi.status());
           }
         }
       }
       request->send(200, "text/plain", responseMessage);
     });
 }
+// Function that returns error message as a String based on the WiFi status
+String getWiFiErrorMessage(wl_status_t status) {
+  switch (status) {
+    case WL_NO_SSID_AVAIL:
+      return "Error: No SSID Available";
+    case WL_CONNECT_FAILED:
+      return "Error: Connection Failed. Wrong Password?";
+    case WL_IDLE_STATUS:
+      return "Status: Wi-Fi is Idle";
+    case WL_DISCONNECTED:
+      return "Error: Wi-Fi Disconnected";
+    case WL_SCAN_COMPLETED:
+      return "Status: Wi-Fi Scan Completed";
+    case WL_CONNECTION_LOST:
+      return "Error: Connection Lost";
+    default:
+      return "Attempting to connect...";
+  }
+}
 
-void initWiFi() {
-  WiFi.begin(ssid, pass);
-  Serial.print("Connecting to WiFi.");
+bool initWifi(){
+  if(ssid == "" || pass ==""){
+    Serial.println("Undefined SSID or IP address.");
+    return false;
+  }
+
+  WiFi.mode(WIFI_STA);
+  WiFi.disconnect();
+
+  WiFi.begin(ssid.c_str(), pass.c_str());
+  Serial.println("Connected to WiFi...");
 
   unsigned long currentMillis = millis();
   previousMillis = currentMillis;
@@ -167,44 +207,57 @@ void initWiFi() {
     currentMillis = millis();
     if (currentMillis - previousMillis >= interval){
       Serial.println("Failed to connect.");
+      return false;
     }
   }
 
   Serial.println("Connected!");
-  digitalWrite(LED, LOW);
+  Serial.print("IP Address :");
+  Serial.println(WiFi.localIP());
+  isConnected = true;
+  digitalWrite(LED,LOW);
+  return true;
 
 }
 
 void setup() {
   pinMode(LED, OUTPUT);
+  digitalWrite(LED, HIGH);
+  delay(100);
 
 
   // put your setup code here, to run once:
   Serial.begin(115200);
   initLittleFS();
 
-  // Set Wi-Fi to station mode and disconnect from any existing connection
-  WiFi.mode(WIFI_STA);
-  WiFi.disconnect();
-  digitalWrite(LED, HIGH);
-  delay(100);
+  //Load Values saved in LittleFS
+  ssid = readFile(LittleFS, ssidPath);
+  pass = readFile(LittleFS, passPath);
 
-  // Call the getWiFiNetworks function and print the result
-  Serial.println("Scanning for Wi-Fi networks...");
-  networks = scanWiFiNetworks();
-  Serial.println(networks);
+  if(initWifi()){
+    //if Connected!
+    if(isConnected){
+      Serial.println("Connected");
+    }
+  }else{
+      // Call the getWiFiNetworks function and print the result
+      Serial.println("Scanning for Wi-Fi networks...");
+      networks = scanWiFiNetworks();
+      Serial.println(networks);
 
-  Serial.println("Setting AP (Acces Point)");
-  WiFi.softAP("ESP-WIFI-MANAGER", NULL);
+      Serial.println("Setting AP (Acces Point)");
+      WiFi.softAP("ESP-WIFI-MANAGER", NULL);
 
-  IPAddress IP = WiFi.softAPIP();
-  Serial.print("AP IP Address: ");
-  Serial.println(IP);
+      IPAddress IP = WiFi.softAPIP();
+      Serial.print("AP IP Address: ");
+      Serial.println(IP);
 
-  handleGetRequest();
-  handlePostRequest();
+      handleGetRequest();
+      handlePostRequest();
   
-  server.begin();
+      server.begin();
+  }
+
 }
 
 void loop() {

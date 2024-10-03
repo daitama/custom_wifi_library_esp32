@@ -20,6 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
   refreshButton.addEventListener("click", function () {
     handleRefreshButton();
   });
+  //handleGetStatus();//tambahkan method untuk ambil status wifi connected!
   handleGetNetwork(); //uncomment ketika pake ESP32
   // document.dispatchEvent(new Event(RENDER_EVENT));
 });
@@ -30,18 +31,18 @@ document.addEventListener(RENDER_EVENT, () => {
 
 function handleGetNetwork() {
   fetch("/getNetworks")
-  .then(response => response.text())
-  .then(data => {
-    accessPoints = JSON.parse(data);
-    document.dispatchEvent(new Event(RENDER_EVENT));
-  });
+    .then((response) => response.text())
+    .then((data) => {
+      accessPoints = JSON.parse(data);
+      document.dispatchEvent(new Event(RENDER_EVENT));
+    });
 }
 
 function handleRefreshButton() {
   fetch("/", {
     method: "POST",
-    headers: { 'Content-type': 'application/x-www-form-urlencoded'},
-    body: "message=go"
+    headers: { "Content-type": "application/x-www-form-urlencoded" },
+    body: "message=go",
   })
     .then((response) => response.text())
     .then((data) => {
@@ -192,17 +193,18 @@ function sendCredentialData(ssid, pass, type) {
   apData.append("password", pass);
   fetch("/", {
     method: "POST",
-    headers: {'Content-Type': 'application/x-www-form-urlencoded' // Specify the content type
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded", // Specify the content type
     },
-    body: apData.toString()
+    body: apData.toString(),
   })
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-  }
-    return response.text(); // Assuming the server responds with text
-  })
-  .then(data => {
-    alert(data);
-  });
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.text(); // Assuming the server responds with text
+    })
+    .then((data) => {
+      alert(data);
+    });
 }
