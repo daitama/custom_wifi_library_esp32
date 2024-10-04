@@ -191,7 +191,7 @@ function sendCredentialData(ssid, pass, type) {
   const apData = new URLSearchParams();
   apData.append("ssid", ssid);
   apData.append("password", pass);
-  fetch("/", {
+  fetch("/sendCredential", {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded", // Specify the content type
@@ -206,5 +206,6 @@ function sendCredentialData(ssid, pass, type) {
     })
     .then((data) => {
       alert(data);
+      window.location.reload();
     });
 }
