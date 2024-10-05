@@ -1,4 +1,3 @@
-//PERMASALAHAN DI initWifi()
 #include <WiFi.h>
 #include <ESPAsyncWebServer.h>
 #include <AsyncTCP.h>
@@ -9,6 +8,7 @@
 // File paths to save input values premanently
 const char* ssidPath = "/ssid.txt";
 const char* passPath = "/pass.txt";
+
 
 //Timer variables
 unsigned long previousMillis = 0;
@@ -27,6 +27,7 @@ String networks;
 
 //Variable to save states
 bool isConnected = false;
+bool ledState = LOW;
 
 
 // Initialize LittleFS
@@ -184,25 +185,6 @@ void handlePostRequest(){
       ESP.restart();
     });
 }
-// Function that returns error message as a String based on the WiFi status
-String getWiFiErrorMessage(wl_status_t status) {
-  switch (status) {
-    case WL_NO_SSID_AVAIL:
-      return "Error: No SSID Available";
-    case WL_CONNECT_FAILED:
-      return "Error: Connection Failed. Wrong Password?";
-    case WL_IDLE_STATUS:
-      return "Status: Wi-Fi is Idle";
-    case WL_DISCONNECTED:
-      return "Error: Wi-Fi Disconnected";
-    case WL_SCAN_COMPLETED:
-      return "Status: Wi-Fi Scan Completed";
-    case WL_CONNECTION_LOST:
-      return "Error: Connection Lost";
-    default:
-      return "Attempting to connect...";
-  }
-}
 
 bool initWifi() {
     if (ssid == "" || pass == "") {
@@ -232,6 +214,25 @@ bool initWifi() {
     return true;
 }
 
+// Handle LED blinking and Wi-Fi status
+void handleLedAndWifi() {
+  unsigned long currentMillis = millis();
+  const long ledInterval = 200;
+
+  if (WiFi.status() == WL_CONNECTED) {
+    // Turn LED ON when connected
+    digitalWrite(LED, LOW);
+    isConnected = true;
+  } else {
+    // Blink LED when not connected
+    if (currentMillis - previousMillis >= ledInterval) {
+      previousMillis = currentMillis;
+      ledState = !ledState;  // Toggle LED state
+      digitalWrite(LED, ledState);
+    }
+    isConnected = false;
+  }
+}
 
 void setup() {
   pinMode(LED, OUTPUT);
@@ -250,6 +251,8 @@ void setup() {
   pass = readFile(LittleFS, passPath);
 
   if (!initWifi()) {
+    //Jika Gagal connect WiFi.....
+
     // Call the getWiFiNetworks function and print the result
     WiFi.mode(WIFI_OFF);
     delay(1000); // Add a delay to ensure Wi-Fi module is ready
@@ -269,12 +272,14 @@ void setup() {
     handlePostRequest();
     server.begin();
   } else{
-    Serial.println("Connected!");
+    //Jika berhasil connect WiFi.....
+
   }
 
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
+  handleLedAndWifi();
 
 }
